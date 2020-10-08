@@ -1,34 +1,9 @@
 import sys
 import os
-import dask
-from dask.distributed import Client, LocalCluster
-from dask.diagnostics import ProgressBar
-import dask.dataframe as dd
-
-def dask_multi(df, meta, threads, function, **kwargs):
-    '''
-    Perform multiprocessign nlp operations on df.
-
-    args:
-        -df: df, dataframe to be formatted.
-    '''
-    args = dict(**kwargs)
-    args["meta"] = meta
-    ddf = dd.from_pandas(df, npartitions=threads/2)
-    df_out = ddf.map_partitions(
-        function,
-        **args)
-    df = df_out.compute(scheduler='processes')
-    return df
-
-
-def dask_apply(df, **argv):
-    '''
-    '''
-    for func, args in argv["execution"].items():
-        #func= list(params.funcs())[0]
-        df = df.apply(func, **args, axis=1)
-    return df
+import requests
+import multiprocessing
+import time
+import functools
 
 
 def _getThreads():
@@ -40,14 +15,7 @@ def _getThreads():
     else:
         return (int)(os.popen('grep -c cores /proc/cpuinfo').read())
 
-
-import requests
-import multiprocessing
-import time
-import functools
-
 session = None
-
 def set_global_session():
     global session
     if not session:
@@ -61,6 +29,7 @@ def multiproc_func(rows, func, **kwargs):
 
 
 if __name__ == "__main__":
+
     rows = df['text'].to_list()
     start_time = time.time()
     res= []
