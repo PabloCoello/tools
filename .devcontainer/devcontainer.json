@@ -8,5 +8,6 @@
 		"args": {
 			"VARIANT": "focal"
 		}
-	}
+	},
+	"extensions": ["ms-python.python", "esbenp.prettier-vscode"]
 }
