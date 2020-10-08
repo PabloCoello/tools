@@ -1,0 +1,16 @@
+paramiko
+pymongo
+psycopg2
+sqlalchemy
+pandas
+Rtree
+geopandas
+vaderSentiment
+afinn
+labMTsimple
+numpy
+Unidecode
+shapely
+nltk
+tweet-preprocessor
+datetime
