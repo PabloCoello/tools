@@ -73,7 +73,8 @@ def lemmatization(row, nlp, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
         token.lemma_ for token in doc if token.pos_ in allowed_postags]
     return tokenized_text
 
-def get_stopwords(lang = 'english'):
+
+def get_stopwords(lang='english'):
     '''
     Return stopwords array.
     '''
@@ -82,16 +83,20 @@ def get_stopwords(lang = 'english'):
     return stopwords
 
 
-def remove_stopwords(row):
+def split_words(text):
     '''
+    Return array of words from a string.
     '''
-    esp_stopwords = [unidecode.unidecode(
-        elem) for elem in stopwords.words('spanish')]
-    toret = [[word for word in simple_preprocess(
-        str(doc)) if word not in stopwords.words('english')] for doc in row['tokenized_text']]
-    toret = [[word for word in simple_preprocess(
-        str(doc)) if word not in esp_stopwords] for doc in toret]
-    return toret
+    return text.split()
+
+
+def remove_stopwords(text, stopwords):
+    '''
+    Remove stopwords from a string
+    '''
+    text = split_words(text)
+    toret = [word for word in text if word not in stopwords]
+    return toret.join()
 
 
 def sent_to_words(self, sentences):
