@@ -97,11 +97,3 @@ def remove_stopwords(text, stopwords):
     text = split_words(text)
     toret = [word for word in text if word not in stopwords]
     return toret.join()
-
-
-def sent_to_words(self, sentences):
-    '''
-    '''
-    for sentence in sentences:
-        # deacc=True removes punctuations
-        yield(gensim.utils.simple_preprocess(str(sentence), deacc=True))
