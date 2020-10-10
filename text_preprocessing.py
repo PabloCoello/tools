@@ -48,24 +48,6 @@ def remove_rspace(text):
     return text.rstrip()
 
 
-def clean_pipeline(text):
-    '''
-    Function for apply. Performs preprocess.api clean function to raw text.
-    
-    args:
-        -text: string.
-    '''
-    toret = unicode_to_ascii(text)
-    toret = remove_punctuation(toret)
-    toret = clean(toret)
-    toret = toret.lower()  # All lowercase
-    toret = remove_urls(toret)
-    toret = remove_double_whitespaces(toret)  # Remove double spaces
-    toret = remove_lspace(toret)  # Remove leading space
-    toret = remove_rspace(toret)
-    return toret
-
-
 def lemmatization(row, nlp, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     """https://spacy.io/api/annotation"""
     doc = nlp(row)
@@ -97,3 +79,21 @@ def remove_stopwords(text, stopwords):
     text = split_words(text)
     toret = [word for word in text if word not in stopwords]
     return toret.join()
+
+
+def clean_pipeline(text):
+    '''
+    Function for apply. Performs preprocess.api clean function to raw text.
+    
+    args:
+        -text: string.
+    '''
+    toret = unicode_to_ascii(text)
+    toret = remove_punctuation(toret)
+    toret = clean(toret)
+    toret = toret.lower()  # All lowercase
+    toret = remove_urls(toret)
+    toret = remove_double_whitespaces(toret)  # Remove double spaces
+    toret = remove_lspace(toret)  # Remove leading space
+    toret = remove_rspace(toret)
+    return toret
