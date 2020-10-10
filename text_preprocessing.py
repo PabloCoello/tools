@@ -73,6 +73,14 @@ def lemmatization(row, nlp, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
         token.lemma_ for token in doc if token.pos_ in allowed_postags]
     return tokenized_text
 
+def get_stopwords(lang = 'english'):
+    '''
+    Return stopwords array.
+    '''
+    stopwords = [unicode_to_ascii(
+        elem) for elem in stopwords.words(lang)]
+    return stopwords
+
 
 def remove_stopwords(row):
     '''
@@ -92,4 +100,3 @@ def sent_to_words(self, sentences):
     for sentence in sentences:
         # deacc=True removes punctuations
         yield(gensim.utils.simple_preprocess(str(sentence), deacc=True))
-
