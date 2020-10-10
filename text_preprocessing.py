@@ -5,6 +5,47 @@ from nltk.corpus import stopwords
 import pandas as pd
 from preprocessor.api import clean
 
+def unicode_to_ascii(text):
+    '''
+    Performs transformation from unicode format to ascii using Unidecode library.
+    '''
+    return unidecode.unidecode(str(text))
+
+
+def remove_punctuation(text):
+    '''
+    Removes punctuation sings from a string.
+    '''
+    return text.translate(str.maketrans('', '', string.punctuation))
+
+
+def remove_urls(text):
+    '''
+    Remuve all url from a string.
+    '''
+    return re.sub(r'(\s)http\w+', r'\1', text)
+
+
+def remove_double_whitespaces(text):
+    '''
+    Remove double whitespaces from a string.
+    '''
+    return re.sub(' +', ' ', text)
+
+
+def remove_lspace(text):
+    '''
+    Remove initial whitespace.
+    '''
+    return text.lstrip()
+
+
+def remove_rspace(text):
+    '''
+    Remove final whitespace.
+    '''
+    return text.rstrip()
+
 
 def clean_text(row):
     '''
@@ -15,9 +56,9 @@ def clean_text(row):
     '''
     clean_tweet = unidecode.unidecode(str(row))
     clean_tweet = clean_tweet.translate(str
-                                            .maketrans('',
-                                                        '',
-                                                        string.punctuation))
+                                        .maketrans('',
+                                                   '',
+                                                   string.punctuation))
     clean_tweet = clean(clean_tweet)
     clean_tweet = clean_tweet.lower()  # All lowercase
     clean_tweet = re.sub(r'(\s)http\w+', r'\1', clean_tweet)
