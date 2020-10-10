@@ -5,6 +5,7 @@ from nltk.corpus import stopwords
 import pandas as pd
 from preprocessor.api import clean
 
+
 def unicode_to_ascii(text):
     '''
     Performs transformation from unicode format to ascii using Unidecode library.
@@ -47,41 +48,32 @@ def remove_rspace(text):
     return text.rstrip()
 
 
-def clean_text(row):
+def clean_pipeline(text):
     '''
-    Function for apply. Performs preprocess.api clean function to raw tweet text.
+    Function for apply. Performs preprocess.api clean function to raw text.
     
     args:
-        -row: row from df (apply).
+        -text: string.
     '''
-    clean_tweet = unidecode.unidecode(str(row))
-    clean_tweet = clean_tweet.translate(str
-                                        .maketrans('',
-                                                   '',
-                                                   string.punctuation))
-    clean_tweet = clean(clean_tweet)
-    clean_tweet = clean_tweet.lower()  # All lowercase
-    clean_tweet = re.sub(r'(\s)http\w+', r'\1', clean_tweet)
-    clean_tweet = re.sub(' +', ' ', clean_tweet)  # Remove double spaces
-    clean_tweet = clean_tweet.lstrip()  # Remove leading space
-    clean_tweet = clean_tweet.rstrip()
-    return clean_tweet
+    toret = unicode_to_ascii(text)
+    toret = remove_punctuation(toret)
+    toret = clean(toret)
+    toret = toret.lower()  # All lowercase
+    toret = remove_urls(toret)
+    toret = remove_double_whitespaces(toret)  # Remove double spaces
+    toret = remove_lspace(toret)  # Remove leading space
+    toret = remove_rspace(toret)
+    return toret
 
 
-def lemmatization(row,nlp,allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
+def lemmatization(row, nlp, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     """https://spacy.io/api/annotation"""
     doc = nlp(row)
-    tokenized_text = [token.lemma_ for token in doc if token.pos_ in allowed_postags]
+    tokenized_text = [
+        token.lemma_ for token in doc if token.pos_ in allowed_postags]
     return tokenized_text
 
-'''
 
-                  mix_list=['covid19', 'coronavirus', 'sars-cov',
-                            'covid', 'covid-19', 'sarscov2', 'sars-cov-2'],
-                  merge=u'coronavirus'
-    for token in doc:
-        if(token.text in mix_list):
-'''
 def remove_stopwords(row):
     '''
     '''
