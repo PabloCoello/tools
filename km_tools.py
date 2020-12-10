@@ -79,7 +79,7 @@ class km():
         toret = []
         clusters = {}
         for i in range(mc_iterations):
-            self.fit_km(3, 1000)
+            self.fit_km(n_clust, 1000)
             self.identify_clusters(n_clust=n_clust)
             current_pair = self.get_current_pair(cent=self.get_centroids(),
                                                  labels=self.get_labels())
@@ -142,5 +142,5 @@ if __name__ == '__main__':
     # Get cluster plot
     kmeans.get_km_plot()
 
-    df = kmeans.perform_km_multiple_analysis(3, 1000)
+    df = kmeans.perform_km_multiple_analysis(4, 10)
     kmeans.clusters
