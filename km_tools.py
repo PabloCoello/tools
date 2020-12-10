@@ -12,6 +12,8 @@ class km():
         '''
         '''
         self.x_ = df[features]
+        self.clusters = {}
+        self.df = df
 
     def get_km__(self, n_clusters, max_iter):
         '''
@@ -62,10 +64,56 @@ class km():
                    c=color_theme[pca_nombres_x.km_labels], s=50)
         plt.show()
 
-    def perform_km_multiple_analysis(self):
+    def perform_km_multiple_analysis(self, n_clust, mc_iterations):
         '''
         '''
-        return
+        matrix = self.get_cluster_matrix(n_clust, mc_iterations)
+        for cluster in range(matrix.max()+1):
+            self.df['cluster_'+str(cluster)] = np.asarray((matrix ==
+                                                           cluster).sum(0)).reshape(-1)
+        return self.df
+
+    def get_cluster_matrix(self, n_clust, mc_iterations):
+        '''
+        '''
+        toret = []
+        clusters = {}
+        for i in range(mc_iterations):
+            self.fit_km(3, 1000)
+            self.identify_clusters(n_clust=n_clust)
+            current_pair = self.get_current_pair(cent=self.get_centroids(),
+                                                 labels=self.get_labels())
+            toret.append(self.assign_labels(current_pair))
+        return np.matrix(toret)
+
+    def get_current_pair(self, cent, labels):
+        '''
+        '''
+        current_pair = [(elem, cent[elem]) for elem in labels]
+        return current_pair
+
+    def identify_clusters(self, n_clust):
+        '''
+        '''
+        for cluster in range(n_clust):
+            if len(self.clusters.values()) == 0:
+                self.clusters[cluster] = self.get_centroids()[cluster]
+
+            logic = [(self.get_centroids()[cluster] != value).all()
+                     for value in self.clusters.values()]
+            if all(logic):
+                self.clusters[np.max(list(self.clusters.keys())) +
+                              1] = self.get_centroids()[cluster]
+
+    def assign_labels(self, current_pair):
+        '''
+        '''
+        toret = []
+        for pair in current_pair:
+            label = [key for key, value in self.clusters.items() if (
+                value == pair[1]).all()][0]
+            toret.append(label)
+        return toret
 
 
 if __name__ == '__main__':
@@ -94,30 +142,5 @@ if __name__ == '__main__':
     # Get cluster plot
     kmeans.get_km_plot()
 
-
-'''
-def gen_matrix(niter, X):
-    toret = []
-    for i in range(niter):
-        kmeans = KMeans(3).fit(X)
-        toret.append(kmeans.labels_)
-       return toret
-
-def get_mean(lista):
-    return lista.mean()
-
-
-def plot_cluster(gdf, cluster):
-    gdf[gdf.cluster==cluster]['municipio'].plot()
-
-for i in range(3):
-    matrix = gen_matrix(1, X)
-
-    matrix = np.matrix(matrix).T
-    res = np.apply_along_axis(get_mean, axis=1, arr=matrix)
-    res = res.tolist()
-
-    res = matrix[0].tolist()
-    df['cluster'] = res
-    df.head()
-'''
+    df = kmeans.perform_km_multiple_analysis(3, 1000)
+    kmeans.clusters
