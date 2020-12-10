@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import seaborn as sb
+from tqdm import tqdm
 
 
 class km():
@@ -78,7 +79,7 @@ class km():
         '''
         toret = []
         clusters = {}
-        for i in range(mc_iterations):
+        for i in tqdm(range(mc_iterations)):
             self.fit_km(n_clust, 1000)
             self.identify_clusters(n_clust=n_clust)
             current_pair = self.get_current_pair(cent=self.get_centroids(),
