@@ -16,3 +16,5 @@ tweet-preprocessor
 datetime
 ipykernel
 matplotlib
+ipywidgets
+tqdm
