@@ -6,57 +6,94 @@ import pandas as pd
 from preprocessor.api import clean
 
 
-def clean_text(row):
+def unicode_to_ascii(text):
     '''
-    Function for apply. Performs preprocess.api clean function to raw tweet text.
-    
-    args:
-        -row: row from df (apply).
+    Performs transformation from unicode format to ascii using Unidecode library.
     '''
-    clean_tweet = unidecode.unidecode(str(row))
-    clean_tweet = clean_tweet.translate(str
-                                            .maketrans('',
-                                                        '',
-                                                        string.punctuation))
-    clean_tweet = clean(clean_tweet)
-    clean_tweet = clean_tweet.lower()  # All lowercase
-    clean_tweet = re.sub(r'(\s)http\w+', r'\1', clean_tweet)
-    clean_tweet = re.sub(' +', ' ', clean_tweet)  # Remove double spaces
-    clean_tweet = clean_tweet.lstrip()  # Remove leading space
-    clean_tweet = clean_tweet.rstrip()
-    return clean_tweet
+    return unidecode.unidecode(str(text))
 
 
-def lemmatization(row,nlp,allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
+def remove_punctuation(text):
+    '''
+    Removes punctuation sings from a string.
+    '''
+    return text.translate(str.maketrans('', '', string.punctuation))
+
+
+def remove_urls(text):
+    '''
+    Remuve all url from a string.
+    '''
+    return re.sub(r'(\s)http\w+', r'\1', text)
+
+
+def remove_double_whitespaces(text):
+    '''
+    Remove double whitespaces from a string.
+    '''
+    return re.sub(' +', ' ', text)
+
+
+def remove_lspace(text):
+    '''
+    Remove initial whitespace.
+    '''
+    return text.lstrip()
+
+
+def remove_rspace(text):
+    '''
+    Remove final whitespace.
+    '''
+    return text.rstrip()
+
+
+def lemmatization(row, nlp, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     """https://spacy.io/api/annotation"""
     doc = nlp(row)
-    tokenized_text = [token.lemma_ for token in doc if token.pos_ in allowed_postags]
+    tokenized_text = [
+        token.lemma_ for token in doc if token.pos_ in allowed_postags]
     return tokenized_text
 
-'''
 
-                  mix_list=['covid19', 'coronavirus', 'sars-cov',
-                            'covid', 'covid-19', 'sarscov2', 'sars-cov-2'],
-                  merge=u'coronavirus'
-    for token in doc:
-        if(token.text in mix_list):
-'''
-def remove_stopwords(row):
+def get_stopwords(lang='english'):
     '''
+    Return stopwords array.
     '''
-    esp_stopwords = [unidecode.unidecode(
-        elem) for elem in stopwords.words('spanish')]
-    toret = [[word for word in simple_preprocess(
-        str(doc)) if word not in stopwords.words('english')] for doc in row['tokenized_text']]
-    toret = [[word for word in simple_preprocess(
-        str(doc)) if word not in esp_stopwords] for doc in toret]
+    stopwords = [unicode_to_ascii(
+        elem) for elem in stopwords.words(lang)]
+    return stopwords
+
+
+def split_words(text):
+    '''
+    Return array of words from a string.
+    '''
+    return text.split()
+
+
+def remove_stopwords(text, stopwords):
+    '''
+    Remove stopwords from a string
+    '''
+    text = split_words(text)
+    toret = [word for word in text if word not in stopwords]
+    return toret.join()
+
+
+def clean_pipeline(text):
+    '''
+    Function for apply. Performs preprocess.api clean function to raw text.
+    
+    args:
+        -text: string.
+    '''
+    toret = unicode_to_ascii(text)
+    toret = remove_punctuation(toret)
+    toret = clean(toret)
+    toret = toret.lower()  # All lowercase
+    toret = remove_urls(toret)
+    toret = remove_double_whitespaces(toret)  # Remove double spaces
+    toret = remove_lspace(toret)  # Remove leading space
+    toret = remove_rspace(toret)
     return toret
-
-
-def sent_to_words(self, sentences):
-    '''
-    '''
-    for sentence in sentences:
-        # deacc=True removes punctuations
-        yield(gensim.utils.simple_preprocess(str(sentence), deacc=True))
-
